@@ -2,7 +2,11 @@
 
 ## Regular Code to Display Cart Count
 
-<a href="<?php echo site_url(); ?>/cart/"><?php echo WC()->cart->get_cart_contents_count(); ?></a>
+```
+<a href="<?php echo site_url(); ?>/cart/">
+	<?php echo WC()->cart->get_cart_contents_count(); ?>
+</a>
+```
 
 ## WooCommerce Ajax Plugins
 
