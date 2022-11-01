@@ -10,9 +10,9 @@
 
 ## WooCommerce Ajax Plugins
 
-- wpc ajax add to cart
-- ajaxified cart woocommerce
-- woocommerce ajax cart
+- WPC AJAX Add to Cart for WooCommerce
+- WooCommerce Ajaxified Cart
+- WooCommerce Ajax Cart Plugin
 
 ## WooCommerce Cart Counter Using ShortCode
 
