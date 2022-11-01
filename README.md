@@ -18,7 +18,7 @@
 
 ### Code for functions.php
 
-`
+```
 add_shortcode ('woo_cart_count', 'woo_cart_count' );
 function woo_cart_count() {
 	ob_start();
@@ -28,7 +28,7 @@ function woo_cart_count() {
     <?php
     return ob_get_clean();
 }
-`
+```
 
 ### Display Cart Count in Menu
 
@@ -42,7 +42,7 @@ function woo_cart_count() {
 
 ### Function for functions.php file
 
-`
+```
 add_filter('woocommerce_add_to_cart_fragments', 'wc_refresh_mini_cart_count');
 function wc_refresh_mini_cart_count($fragments){
 	ob_start();
@@ -53,16 +53,16 @@ function wc_refresh_mini_cart_count($fragments){
     $fragments['.mini-cart-count'] = ob_get_clean();
 	return $fragments;
 }
-`
+```
 
 ### Code for Template File
 
-`
+```
 <small class="product_counter">
 	<?php $items_count = WC()->cart->get_cart_contents_count(); ?>
 	<span id="mini-cart-count"><?php echo $items_count ? $items_count : '0'; ?></span>
 </small>
-`
+```
 
 WebStylePress
 
