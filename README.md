@@ -1,6 +1,6 @@
 # WooCommerce Ajax & Cart Counter
 
-## Regular Code to Display Cart Count
+## 1- Regular Code to Display Cart Count
 
 ```
 <a href="<?php echo site_url(); ?>/cart/">
@@ -8,13 +8,13 @@
 </a>
 ```
 
-## WooCommerce Ajax Plugins
+## 2- WooCommerce Ajax Plugins
 
 - WPC AJAX Add to Cart for WooCommerce
 - WooCommerce Ajaxified Cart
 - WooCommerce Ajax Cart Plugin
 
-## WooCommerce Cart Counter Using ShortCode
+## 3- WooCommerce Cart Counter Using ShortCode
 
 ### Allow shortcode in menu (Code for functions.php)
 
@@ -42,7 +42,7 @@ function woo_cart_count() {
 
 `<?php echo do_shortcode('[woo_cart_count]') ?>`
 
-## WooCommerce Cart Counter Using Filter
+## 4- WooCommerce Cart Counter Using Filter
 
 ### Filter for functions.php file
 
