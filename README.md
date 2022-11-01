@@ -16,7 +16,7 @@
 
 ## WooCommerce Cart Counter Using ShortCode
 
-### Allow shortcode in menu
+### Allow shortcode in menu (Code for functions.php)
 
 `add_filter('wp_nav_menu_items', 'do_shortcode');`
 
