@@ -44,7 +44,7 @@ function woo_cart_count() {
 
 ## WooCommerce Cart Counter Using Filter
 
-### Function for functions.php file
+### Filter for functions.php file
 
 ```
 add_filter('woocommerce_add_to_cart_fragments', 'wc_refresh_mini_cart_count');
