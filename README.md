@@ -64,7 +64,7 @@ function wc_refresh_mini_cart_count($fragments){
 ```
 <small class="product_counter">
 	<?php $items_count = WC()->cart->get_cart_contents_count(); ?>
-	<span id="mini-cart-count"><?php echo $items_count ? $items_count : '0'; ?></span>
+	<span class="mini-cart-count"><?php echo $items_count ? $items_count : '0'; ?></span>
 </small>
 ```
 
