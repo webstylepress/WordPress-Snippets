@@ -1,113 +1,56 @@
-# User Account Dashboard Management
+# Remove Product and Product category from URL in WordPress
 
-## 1- Code for Adding New Link 
+## 1- Remove product from permalink or URL in wordpress 
 
-- Replace PAGE_ONE, PAGE-ONE and PAGE ONE in code below
+From permalink settings under optional in 'product category base' type period . and copy following code in functions.php file 
 
 ```
-// register an end point
-
-add_action( 'init', 'register_PAGE_ONE_endpoint');
-function register_PAGE_ONE_endpoint() {
-	add_rewrite_endpoint( 'PAGE-ONE', EP_ROOT | EP_PAGES );
+function wsp_remove_slug( $post_link, $post, $leavename ) {
+    if ( 'product' != $post->post_type || 'publish' != $post->post_status ) {
+        return $post_link;
+    }
+    $post_link = str_replace( '/product/', '/', $post_link );
+    return $post_link;
 }
+add_filter( 'post_type_link', 'wsp_remove_slug', 10, 3 );
 
-// adjust query variables
+function change_slug_structure( $query ) {
+    if ( ! $query->is_main_query() || 2 != count( $query->query ) || ! isset( $query->query['page'] ) ) {
+        return;
+    }
+    if ( ! empty( $query->query['name'] ) ) {
+        $query->set( 'post_type', array( 'post', 'product', 'page' ) );
+    } elseif ( ! empty( $query->query['pagename'] ) && false === strpos( $query->query['pagename'], '/' ) ) {
+        $query->set( 'post_type', array( 'post', 'product', 'page' ) );
+        // We also need to set the name query var since redirect_guess_404_permalink() relies on it.
+        $query->set( 'name', $query->query['pagename'] );
+    }
+}
+add_action( 'pre_get_posts', 'change_slug_structure', 99 );
+```
 
-add_filter( 'query_vars', 'PAGE_ONE_query_vars' );
-function PAGE_ONE_query_vars( $vars ) {
-	$vars[] = 'PAGE-ONE';
+## 2- Remove product-category from permalink or URL in wordpress
+
+```
+add_filter('request', function( $vars ) {
+	global $wpdb;
+	if( ! empty( $vars['pagename'] ) || ! empty( $vars['category_name'] ) || ! empty( $vars['name'] ) || ! empty( $vars['attachment'] ) ) {
+		$slug = ! empty( $vars['pagename'] ) ? $vars['pagename'] : ( ! empty( $vars['name'] ) ? $vars['name'] : ( !empty( $vars['category_name'] ) ? $vars['category_name'] : $vars['attachment'] ) );
+		$exists = $wpdb->get_var( $wpdb->prepare( "SELECT t.term_id FROM $wpdb->terms t LEFT JOIN $wpdb->term_taxonomy tt ON tt.term_id = t.term_id WHERE tt.taxonomy = 'product_cat' AND t.slug = %s" ,array( $slug )));
+		if( $exists ){
+			$old_vars = $vars;
+			$vars = array('product_cat' => $slug );
+			if ( !empty( $old_vars['paged'] ) || !empty( $old_vars['page'] ) )
+				$vars['paged'] = ! empty( $old_vars['paged'] ) ? $old_vars['paged'] : $old_vars['page'];
+			if ( !empty( $old_vars['orderby'] ) )
+	 	        	$vars['orderby'] = $old_vars['orderby'];
+      			if ( !empty( $old_vars['order'] ) )
+ 			        $vars['order'] = $old_vars['order'];	
+		}
+	}
 	return $vars;
-}
-
-// add link 
-
-add_filter( 'woocommerce_account_menu_items', 'add_PAGE_ONE_tab' );
-function add_PAGE_ONE_tab( $links ) {
-	$links['PAGE-ONE'] = "PAGE ONE";
-	return $links;
-}
-
-// add content
-
-add_action( 'woocommerce_account_PAGE-ONE_endpoint', 'add_PAGE_ONE_content' );
-function add_PAGE_ONE_content() {
-	echo "PAGE ONE contents here!";
-}
+});
 ```
-
-## 2- Code that I have Used
-
-```
-// Offer One
-
-// register an end point
-add_action( 'init', 'register_offer_one_endpoint');
-function register_offer_one_endpoint() {
-	add_rewrite_endpoint( 'offer-one', EP_ROOT | EP_PAGES );
-}
-// adjust query variables
-add_filter( 'query_vars', 'offer_one_query_vars' );
-function offer_one_query_vars( $vars ) {
-	$vars[] = 'offer-one';
-	return $vars;
-}
-// add link 
-add_filter( 'woocommerce_account_menu_items', 'add_offer_one_tab' );
-function add_offer_one_tab( $links ) {
-	$links['offer-one'] = "Offer One";
-	return $links;
-}
-// add content
-add_action( 'woocommerce_account_offer-one_endpoint', 'add_offer_one_content' );
-function add_offer_one_content() {
-	echo "Offer One contents here!";
-}
-
-// Offer Two
-
-// register an end point
-add_action( 'init', 'register_offer_two_endpoint');
-function register_offer_two_endpoint() {
-	add_rewrite_endpoint( 'offer-two', EP_ROOT | EP_PAGES );
-}
-// adjust query variables
-add_filter( 'query_vars', 'offer_two_query_vars' );
-function offer_two_query_vars( $vars ) {
-	$vars[] = 'offer-two';
-	return $vars;
-}
-// add link 
-add_filter( 'woocommerce_account_menu_items', 'add_offer_two_tab' );
-function add_offer_two_tab( $links ) {
-	$links['offer-two'] = "Offer Two";
-	return $links;
-}
-// add content
-add_action( 'woocommerce_account_offer-two_endpoint', 'add_offer_two_content' );
-function add_offer_two_content() {
-	echo "Offer Two contents here!";
-}
-```
-
-### Re-arrange Links
-
-```
-function reorder_account_menu( $items ) {
-	return array(
-		'dashboard'          => __( 'Dashboard', 'woocommerce' ),
-		'orders'             => __( 'Orders', 'woocommerce' ),
-		'downloads'          => __( 'Downloads', 'woocommerce' ),
-		'edit-address'       => __( 'Addresses', 'woocommerce' ),
-		'offer-one'          => __( 'Offer One', 'woocommerce' ),
-		'offer-two'          => __( 'Offer Two', 'woocommerce' ),
-		'edit-account'       => __( 'Edit Account', 'woocommerce' ),
-		'customer-logout'    => __( 'Logout', 'woocommerce' ),
-	);
-}
-add_filter ( 'woocommerce_account_menu_items', 'reorder_account_menu' );
-```
-
 
 WebStylePress
 
