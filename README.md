@@ -1,56 +1,49 @@
-# Remove Product and Product category from URL in WordPress
+# Custom Form Field for Contact Form 7
 
-## 1- Remove product from permalink or URL in wordpress 
-
-From permalink settings under optional in 'product category base' type period . and copy following code in functions.php file 
+Use this code in functions.php file
 
 ```
-function wsp_remove_slug( $post_link, $post, $leavename ) {
-    if ( 'product' != $post->post_type || 'publish' != $post->post_status ) {
-        return $post_link;
+function dynamic_field_values ($tag, $unused) {
+    if ( $tag['name'] != 'custom-dropdown-field' )
+        return $tag;
+    $args = array (
+        'numberposts'   => -1,
+        'post_type'     => 'post',
+        'orderby'       => 'title',
+        'order'         => 'ASC',
+    );
+    $custom_posts = get_posts($args);
+    if ( ! $custom_posts )
+        return $tag;
+    foreach ( $custom_posts as $custom_post ) {
+        $tag['raw_values'][] = $custom_post->post_title;
+        $tag['values'][] = $custom_post->post_title;
+        $tag['labels'][] = $custom_post->post_title;
     }
-    $post_link = str_replace( '/product/', '/', $post_link );
-    return $post_link;
+    return $tag;
 }
-add_filter( 'post_type_link', 'wsp_remove_slug', 10, 3 );
-
-function change_slug_structure( $query ) {
-    if ( ! $query->is_main_query() || 2 != count( $query->query ) || ! isset( $query->query['page'] ) ) {
-        return;
-    }
-    if ( ! empty( $query->query['name'] ) ) {
-        $query->set( 'post_type', array( 'post', 'product', 'page' ) );
-    } elseif ( ! empty( $query->query['pagename'] ) && false === strpos( $query->query['pagename'], '/' ) ) {
-        $query->set( 'post_type', array( 'post', 'product', 'page' ) );
-        // We also need to set the name query var since redirect_guess_404_permalink() relies on it.
-        $query->set( 'name', $query->query['pagename'] );
-    }
-}
-add_action( 'pre_get_posts', 'change_slug_structure', 99 );
+add_filter( 'wpcf7_form_tag', 'dynamic_field_values', 10, 2);
 ```
 
-## 2- Remove product-category from permalink or URL in wordpress
+'custom-dropdown-field' is the field name.
+select will be form tag.
+
+Replace use post, product, custom-post-type as value of 'post_type' in this code.
+
+Use 
 
 ```
-add_filter('request', function( $vars ) {
-	global $wpdb;
-	if( ! empty( $vars['pagename'] ) || ! empty( $vars['category_name'] ) || ! empty( $vars['name'] ) || ! empty( $vars['attachment'] ) ) {
-		$slug = ! empty( $vars['pagename'] ) ? $vars['pagename'] : ( ! empty( $vars['name'] ) ? $vars['name'] : ( !empty( $vars['category_name'] ) ? $vars['category_name'] : $vars['attachment'] ) );
-		$exists = $wpdb->get_var( $wpdb->prepare( "SELECT t.term_id FROM $wpdb->terms t LEFT JOIN $wpdb->term_taxonomy tt ON tt.term_id = t.term_id WHERE tt.taxonomy = 'product_cat' AND t.slug = %s" ,array( $slug )));
-		if( $exists ){
-			$old_vars = $vars;
-			$vars = array('product_cat' => $slug );
-			if ( !empty( $old_vars['paged'] ) || !empty( $old_vars['page'] ) )
-				$vars['paged'] = ! empty( $old_vars['paged'] ) ? $old_vars['paged'] : $old_vars['page'];
-			if ( !empty( $old_vars['orderby'] ) )
-	 	        	$vars['orderby'] = $old_vars['orderby'];
-      			if ( !empty( $old_vars['order'] ) )
- 			        $vars['order'] = $old_vars['order'];	
-		}
-	}
-	return $vars;
-});
+[select custom-dropdown-field include_blank]
 ```
+
+in form and for mail tag use 
+
+```
+[custom-dropdown-field]
+```
+
+in mail body in contact form 7.
+
 
 WebStylePress
 
